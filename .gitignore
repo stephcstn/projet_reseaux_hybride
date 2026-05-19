@@ -175,3 +175,19 @@ cython_debug/
 
 # Ansible
 .ansible/
+
+# Configuration locale de l'éditeur VS Code
+.vscode/
+
+# Conteneurs de développement locaux (si tu ne partages pas ta configuration de dev)
+.devcontainer/
+
+# CI/CD GitHub (Workflows, actions, etc.)
+.github/
+
+# Fichiers de métadonnées et de validation générés par défaut
+argspec_validation_plays.meta.yml
+argspec_validation_plays.yml
+
+# Documentation par défaut
+AGENTS.md

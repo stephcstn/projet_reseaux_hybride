@@ -40,11 +40,35 @@
           - docker-compose-plugin
         update_cache: true
 
-    - name: Vérification de l'installation de Docker
-      ansible.builtin.command:
-        cmd: docker --version
-      register: docker_version
+- name: INSTALLATION DE NAGIOS
+  hosts: server2_test
+  become: true
 
-    - name: Affichage de la version de Docker installée
-      ansible.builtin.debug:
-        msg: "Docker version installed: {{ docker_version.stdout }}"
+  tasks:
+    - name: Installer Apache et PHP
+      ansible.builtin.apt:
+        name:
+          - apache2
+          - php
+          - libapache2-mod-php
+          - unzip
+        state: present
+        update_cache: yes
+
+    - name: Installer Nagios 4 et ses plugins de base
+      ansible.builtin.apt:
+        name:
+          - nagios4
+          - nagios-plugins-basic
+          - nagios-nrpe-plugin
+        state: present
+
+    - name: S'assurer qu'Apache et Nagios sont bien démarrés
+      ansible.builtin.service:
+        name: "{{ item }}"
+        state: started
+        enabled: yes
+      loop:
+        - apache2
+        - nagios4
+

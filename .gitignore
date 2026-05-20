@@ -191,3 +191,9 @@ argspec_validation_plays.yml
 
 # Documentation par défaut
 AGENTS.md
+
+# Fichiers de logs générés par défaut
+.logs/
+
+# Fichiers de playbooks générés par défaut
+linux_playbook.yml

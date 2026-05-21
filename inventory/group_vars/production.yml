@@ -1,2 +1,3 @@
 ---
+ansible_ssh_private_key_file: ../../cle-projet-hybride.pem
 http_port: 22

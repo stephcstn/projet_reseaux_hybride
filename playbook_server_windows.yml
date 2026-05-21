@@ -1,0 +1,42 @@
+- name: INSTALLATION DE ACTIVE DIRECTORY
+  hosts: server2_prod
+  tasks: 
+
+    - name: Lancer les commandes powershell pour préparer le DC
+      ansible.windows.win_powershell:
+        script: |
+          Add-WindowsFeature AD-Domain-Services
+          Set-TimeZone -Name "Romance Standard Time"
+
+    - name: Changer le nom de l'ordinateur
+      ansible.windows.win_hostname:
+        name: aws-ad-prod
+      register: hostname
+  
+    - name: Reboot
+      ansible.windows.win_reboot:
+      when: hostname.reboot_required
+
+    - name: Configurer l'adresse IP statique
+      ansible.windows.win_shell: "Get-NetIpAddress -InterfaceAlias 'Ethernet*' | New-NetIpAddress -IpAddress {{ target_ip }} -PrefixLength {{ target_prefix }} -DefaultGateway {{ target_gateway }}"
+      async: 100
+      poll: 0
+
+    - name: Attendre que l'interface réseau de l'hôte soit de nouveau active
+      local_action:
+        module: wait_for
+        host: "{{ ansible_host }}"
+        port: 5985
+        delay: 10
+        state: started
+      register: wait_result
+
+    - name: Installer le rôle de contrôleur de domaine et promouvoir le serveur
+      ansible.windows.win_domain:
+        dns_domain_name: projet_hybride.local
+        safe_mode_password: "{{ server_password }}"
+      register: domain_install
+  
+    - name: Reboot après promotion du DC
+      ansible.windows.win_reboot:
+      when: domain_install.reboot_required

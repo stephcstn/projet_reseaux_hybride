@@ -1,2 +1,4 @@
 ---
 server_name: ec2_simulation_2
+ansible_host: host.docker.internal
+ansible_port: 2222

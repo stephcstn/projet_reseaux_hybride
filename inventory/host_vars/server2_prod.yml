@@ -1,2 +1,12 @@
 ---
 server_name: ec2_virtuel_2
+ansible_host: "10.0.0.155"
+target_ip: "10.0.0.155"
+server_password: "password"
+
+target_prefix: 24
+target_gateway: "10.0.0.1"
+
+ansible_connection: winrm
+ansible_winrm_server_cert_validation: ignore
+ansible_winrm_transport: ntlm

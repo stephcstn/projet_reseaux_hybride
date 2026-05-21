@@ -1,3 +1,4 @@
 ---
 ansible_user: admin
 ansible_password: insecure_password
+ansible_ssh_private_key_file: cle-projet-hybride.pem

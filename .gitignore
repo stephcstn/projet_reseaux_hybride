@@ -197,3 +197,6 @@ AGENTS.md
 
 # Fichiers de playbooks générés par défaut
 linux_playbook.yml
+
+# Fichier clé pair
+cle-projet-hybride.pem

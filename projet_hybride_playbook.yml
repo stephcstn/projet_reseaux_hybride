@@ -9,7 +9,7 @@
         name:
           - ca-certificates
           - curl
-          - gnupg 
+          - gnupg
         state: present
         update_cache: true
 
@@ -53,7 +53,7 @@
           - libapache2-mod-php
           - unzip
         state: present
-        update_cache: yes
+        update_cache: true
 
     - name: Installer Nagios 4 et ses plugins de base
       ansible.builtin.apt:
@@ -67,9 +67,7 @@
       ansible.builtin.service:
         name: "{{ item }}"
         state: started
-        enabled: yes
+        enabled: true
       loop:
         - apache2
         - nagios4
-
-

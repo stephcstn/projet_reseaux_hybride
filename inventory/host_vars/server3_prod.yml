@@ -1,5 +1,5 @@
 ---
-server_name: ec2_virtuel_3
+ansible_user: ubuntu
 ansible_host: "10.0.0.139"
 target_ip: "10.0.0.139"
 

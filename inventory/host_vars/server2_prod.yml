@@ -1,6 +1,5 @@
 ---
 ansible_user: 
-server_name: ec2_virtuel_2
 ansible_host: "10.0.0.155"
 target_ip: "10.0.0.155"
 server_password: "password"

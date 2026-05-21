@@ -1,0 +1,117 @@
+---
+- name: INSTALLATION DOCKER
+  hosts: server1_prod
+  become: true
+
+  tasks:
+    - name: Installation des paquets nécessaires pour Docker
+      ansible.builtin.apt:
+        name:
+          - ca-certificates
+          - curl
+          - gnupg 
+        state: present
+        update_cache: true
+
+    - name: Créer le dossier pour les clés GPG si inexistant
+      ansible.builtin.file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+
+    - name: Ajout de la clé GPG officielle de Docker (Méthode Moderne)
+      ansible.builtin.get_url:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        dest: /etc/apt/keyrings/docker.asc
+        mode: '0644'
+
+    - name: Ajout du dépôt Docker (Lié à la clé .asc)
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu noble stable"
+        state: present
+
+    - name: Installation de Docker
+      ansible.builtin.apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+        update_cache: true
+
+- name: INSTALLATION DE NAGIOS
+  hosts: server3_prod
+  become: true
+
+  tasks:
+    - name: Installer Apache et PHP
+      ansible.builtin.apt:
+        name:
+          - apache2
+          - php
+          - libapache2-mod-php
+          - unzip
+        state: present
+        update_cache: yes
+
+    - name: Installer Nagios 4 et ses plugins de base
+      ansible.builtin.apt:
+        name:
+          - nagios4
+          - nagios-plugins-basic
+          - nagios-nrpe-plugin
+        state: present
+
+    - name: S'assurer qu'Apache et Nagios sont bien démarrés
+      ansible.builtin.service:
+        name: "{{ item }}"
+        state: started
+        enabled: yes
+      loop:
+        - apache2
+        - nagios4
+
+- name: INSTALLATION DE ACTIVE DIRECTORY
+  hosts: server2_prod
+  tasks: 
+
+    - name: Lancer les commandes powershell pour préparer le DC
+      ansible.windows.win_powershell:
+        script: |
+          Add-WindowsFeature AD-Domain-Services
+          Set-TimeZone -Name "Romance Standard Time"
+
+    - name: Changer le nom de l'ordinateur
+      ansible.windows.win_hostname:
+        name: aws-ad-prod
+      register: hostname
+  
+    - name: Reboot
+      ansible.windows.win_reboot:
+      when: hostname.reboot_required
+
+    - name: Configurer l'adresse IP statique
+      ansible.windows.win_shell: "Get-NetIpAddress -InterfaceAlias 'Ethernet*' | New-NetIpAddress -IpAddress {{ target_ip }} -PrefixLength {{ target_prefix }} -DefaultGateway {{ target_gateway }}"
+      async: 100
+      poll: 0
+
+    - name: Attendre que l'interface réseau de l'hôte soit de nouveau active
+      local_action:
+        module: wait_for
+        host: "{{ ansible_host }}"
+        port: 5985
+        delay: 10
+        state: started
+      register: wait_result
+
+    - name: Installer le rôle de contrôleur de domaine et promouvoir le serveur
+      ansible.windows.win_domain:
+        dns_domain_name: projet_hybride.local
+        safe_mode_password: "{{ server_password }}"
+      register: domain_install
+  
+    - name: Reboot après promotion du DC
+      ansible.windows.win_reboot:
+      when: domain_install.reboot_required
+

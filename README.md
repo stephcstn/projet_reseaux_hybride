@@ -93,3 +93,9 @@ Une fois les configurations validées sur le banc d'essai local, vous pouvez lan
 # Lancer le déploiement de production complet sur les instances AWS
 ansible-navigator run projet_hybride_playbook.yml -i inventory/hosts.yml --mode stdout
 ```
+
+## Vidéo de Démonstration du Projet
+
+Une démonstration vidéo complète de l'infrastructure est disponible :
+
+**[Cliquez ici pour visionner la vidéo de démonstration (Google Drive)] (METS_TON_LIEN_ICI)**

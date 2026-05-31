@@ -97,5 +97,4 @@ ansible-navigator run projet_hybride_playbook.yml -i inventory/hosts.yml --mode 
 ## Vidéo de Démonstration du Projet
 
 Une démonstration vidéo complète de l'infrastructure est disponible :
-
-**[Cliquez ici pour visionner la vidéo de démonstration (Google Drive)] (METS_TON_LIEN_ICI)**
+**([Cliquez ici pour visionner la vidéo de démonstration](https://drive.google.com/file/d/1Hx3jiadApLjl0VImVCfSUtZmDTFJQjLk/view?usp=drive_link))**
